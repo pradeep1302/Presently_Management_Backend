@@ -3,8 +3,10 @@ const mongoose = require("mongoose");
 const cors = require("cors");
 const bodyParser = require("body-parser");
 const userRoute = require("./routes/userRoute");
-const reportRoute = require("./routes/reportRoute");
-const appointmentRoute = require("./routes/appointmentRoute");
+const subjectRoute = require("./routes/subjectRoute");
+const lectureRoute = require("./routes/lectureRoute");
+// const reportRoute = require("./routes/reportRoute");
+// const appointmentRoute = require("./routes/appointmentRoute");
 const errorHandler = require("./middleware/errorMiddleware");
 const cookieParser = require("cookie-parser");
 const dotenv = require("dotenv").config();
@@ -26,8 +28,10 @@ app.use(cors(corsOptions));
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 app.use("/api/users", userRoute);
-app.use("/api/reports", reportRoute);
-app.use("/api/appointments", appointmentRoute);
+app.use("/api/subjects", subjectRoute);
+app.use("/api/lectures", lectureRoute);
+// app.use("/api/reports", reportRoute);
+// app.use("/api/appointments", appointmentRoute);
 
 app.get("/", (req, res) => {
   res.send("Home Page");

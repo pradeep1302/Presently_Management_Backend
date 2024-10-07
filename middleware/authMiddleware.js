@@ -1,7 +1,7 @@
 const asyncHandler = require("express-async-handler");
 const jwt = require("jsonwebtoken");
-const Doctor = require("../models/doctorModel");
-const Patient = require("../models/patientModel");
+const Teacher = require("../models/teacherModel");
+const Student = require("../models/studentModel");
 
 const protect = asyncHandler(async (req, res, next) => {
   try {
@@ -12,9 +12,9 @@ const protect = asyncHandler(async (req, res, next) => {
     }
 
     const verified = jwt.verify(token, process.env.JWT_SECRET);
-    user = await Doctor.findById(verified.id).select("-password");
+    user = await Teacher.findById(verified.id).select("-password");
     !user
-      ? (user = await Patient.findById(verified.id).select("-password"))
+      ? (user = await Student.findById(verified.id).select("-password"))
       : (user = user);
 
     if (!user) {

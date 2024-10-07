@@ -8,10 +8,10 @@ const {
   loginStatus,
   updateUser,
   changePassword,
-  getDoctor,
-  getPatient,
-  getDoctors,
-  getPatients,
+  // getDoctor,
+  // getPatient,
+  // getDoctors,
+  // getPatients,
 } = require("../controllers/userController");
 const protect = require("../middleware/authMiddleware");
 
@@ -22,9 +22,9 @@ router.get("/getuser", protect, getUser);
 router.get("/loginstatus", loginStatus);
 router.patch("/updateuser", protect, updateUser);
 router.patch("/changepassword", protect, changePassword);
-router.get("/getdoctor/:id", getDoctor);
-router.get("/getdoctors", getDoctors);
-router.get("/getpatient/:id", protect, getPatient);
-router.get("/getpatients", protect, getPatients);
+// router.get("/getdoctor/:id", getDoctor);
+// router.get("/getdoctors", getDoctors);
+// router.get("/getpatient/:id", protect, getPatient);
+// router.get("/getpatients", protect, getPatients);
 
 module.exports = router;
