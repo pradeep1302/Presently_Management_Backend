@@ -41,7 +41,6 @@ const StudentSchema = mongoose.Schema(
 			type: String,
 			required: [true, "Please enter a photo"],
 		},
-		classes: [{ type: mongoose.Schema.Types.ObjectId, ref: "Class" }],
 		subjects: [{ type: mongoose.Schema.Types.ObjectId, ref: "Subject" }],
 	},
 	{

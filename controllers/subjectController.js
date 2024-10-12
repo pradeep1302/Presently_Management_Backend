@@ -4,6 +4,7 @@ const Student = require("../models/studentModel");
 const Teacher = require("../models/teacherModel");
 
 const startSubject = asyncHandler(async (req, res) => {
+	console.log(req.body);
 	if (req.user.role != "teacher") {
 		res.status(401);
 		throw new Error("Not authorised");
@@ -131,7 +132,7 @@ const enrollSubject = asyncHandler(async (req, res) => {
 	}
 });
 
-const getSubject = asyncHandler(async (req, res) => {
+const getSubjectDetails = asyncHandler(async (req, res) => {
 	const subject = await Subject.findById(req.params.id).populate([
 		{ path: "students", select: "studentId name email department phone" },
 	]);
@@ -149,4 +150,16 @@ const getSubject = asyncHandler(async (req, res) => {
 	res.status(200).json(subject);
 });
 
-module.exports = { startSubject, enrollSubject, getSubject };
+const getAllSubjects = asyncHandler(async (req, res) => {
+	const subject = await Subject.find().select("name subjectId");
+	res.status(200).json(subject);
+});
+
+const getSubject = asyncHandler(async (req, res) => {
+	const subject = await Subject.findOne({
+		subjectCode: req.body.subjectCode,
+	}).select("name maxSize currentSize");
+	res.status(200).json(subject);
+});
+
+module.exports = { startSubject, enrollSubject, getSubjectDetails, getAllSubjects, getSubject };
