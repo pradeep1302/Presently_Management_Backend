@@ -3,7 +3,18 @@ const Teacher = require("../models/teacherModel");
 const Student = require("../models/studentModel");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
+const axios = require("axios")
+const nodemailer = require("nodemailer");
 const { fileSizeFormatter } = require("../utils/fileUpload");
+
+const transporter = nodemailer.createTransport({
+  service: "gmail",
+  auth: {
+    user: "systemattendance281@gmail.com",
+    pass: "pwabdrittvtwzpgv", // Use your Gmail App Password here
+  },
+});
+
 
 const generateToken = (id) => {
 	return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: "1d" });
@@ -15,61 +26,72 @@ const formatDate = (data) => {
 };
 
 const getFaceData = async (photo) => {
-	// const response = await axios.post(process.env.FLASK_API_URI, {
-	// 	image_url: photo,
-	// });
-
-	// return response.data;
-
-	return [];
+	const response = await axios.post(
+    `${process.env.FLASK_API_URI}/generateEncoding/`,
+    {
+      url: photo,
+    }
+	);
+	
+	return response.data.face_encodings[0];
 };
 
 const registerUser = asyncHandler(async (req, res) => {
 	const { name, email, password, department, phone, role, photo } = req.body;
-
-	console.log(req.body);
-
+	
+	
 	if (!name || !email || !password || !department || !phone) {
 		res.status(400);
 		throw new Error("Please fill in all required fields");
 	}
 	// if (role === "teacher" && !bio) {
-	// 	res.status(400);
-	// 	throw new Error("Please fill in all required fields");
-	// }
-
-	if (role == "student") {
-		if (!photo) {
-			res.status(400);
-			throw new Error("Please fill in all required fields");
-		}
-
-		var faceData = getFaceData(photo);
+		// 	res.status(400);
+		// 	throw new Error("Please fill in all required fields");
+		// }
+		
+		if (role == "student") {
+			if (!photo) {
+				res.status(400);
+				throw new Error("Please fill in all required fields");
+			}
+			
+		var faceData = await getFaceData(photo);
 	}
 	if (password.length < 8) {
 		res.status(400);
 		throw new Error("Password must be up to 8 characters");
 	}
-
+	
 	const teacherExists = await Teacher.findOne({ email });
 	const studentExists = await Student.findOne({ email });
 	if (teacherExists || studentExists) {
 		res.status(400);
 		throw new Error("Email has already been registered");
 	}
-
+	
 	var ddata;
+	
 	if (role == "teacher") {
 		try {
-			ddata = await Teacher.create({
-				name,
-				email,
-				password,
-				department,
-				phone,
-				// role,
-			});
-		} catch (error) {
+		const teacherData = {
+        name,
+        email,
+        password,
+        department,
+        phone,
+			};
+			if (photo.length>0) {
+        teacherData.photo = photo;
+      }
+      ddata = await Teacher.create(teacherData);
+      // Send email after successful registration
+      await transporter.sendMail({
+        from: "systemattendance281@gmail.com",
+        to: email,
+        subject: "Registration Successful",
+        text: `Hello ${name}, your registration was successful! Your Teacher ID is: ${ddata.teacherId}.`,
+      });
+    } catch (error) {
 			res.status(500);
 			throw new Error("An error occurred");
 		}
